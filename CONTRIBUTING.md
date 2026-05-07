@@ -30,6 +30,13 @@ Thank you for your interest in contributing! This document covers the basics of 
 - Write tests for new functionality
 - Update documentation as needed
 
+## Branching
+
+- `main` — always deployable
+- `feature/<name>` — new features
+- `fix/<name>` — bug fixes
+- `chore/<name>` — maintenance
+
 ## Questions?
 
 Open a discussion or reach out to the team.
