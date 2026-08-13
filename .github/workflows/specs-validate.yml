@@ -1,0 +1,18 @@
+name: specs-validate
+on:
+  pull_request:
+    paths:
+      - 'docs/specs/**'
+      - 'docs/changes/**'
+  push:
+    paths:
+      - 'docs/specs/**'
+      - 'docs/changes/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate spec and change tree structure
+        run: bash scripts/specs-validate.sh
