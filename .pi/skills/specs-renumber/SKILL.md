@@ -3,7 +3,7 @@ name: specs-renumber
 description: >
   Consolidation pass: renumber components, features, and subfeatures to close gaps or insert sections.
   Rewrites all frontmatter spec-refs, inline links, and file paths atomically in one commit. Maintenance
-  step in the change pipeline (explore → propose → issue → sync → execute) — exceptional, not routine.
+  step in the 3-path workflow (proposal → changes → issue) — exceptional, not routine.
   Implementation is tracked as GitHub issues (specs-issue + github-issue-tracker), not via renumbering.
 allowed-tools: Bash(grep, find, sed, git, mv)
 ---
@@ -71,4 +71,4 @@ git add -A && git commit -m "specs: renumber for consolidation"
 ## Related
 
 - `specs-index` — regenerate index after renumbering
-- `specs-sync` — normal amendment (renumber is exceptional, not routine)
+- `specs-changes` — normal amendment (renumber is exceptional, not routine)

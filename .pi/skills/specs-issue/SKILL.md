@@ -1,34 +1,27 @@
 ---
 name: specs-issue
 description: >
-  File a change's task list as actionable GitHub issues. Reads the change's tasks.md (and proposal.md)
-  from docs/changes/<version>/<NN>-<kebab>-S<code>/, creates an Epic per change plus one Task/Feature
-  issue per task item, links them as sub-issues, and adds them to the project board in Ready status.
-  STEP 3 of the change pipeline (explore → propose → issue → sync → execute): run AFTER specs-propose
-  and BEFORE specs-sync (which deletes the change dir). Execution of the filed issues happens via
-  github-issue-tracker. Use when a proposed spec change needs its implementation work tracked.
-  NOTE: only for changes with code to implement — documentation-only spec updates skip this skill
-  entirely (edit docs/specs/ directly, see specs-propose).
+  Drive Path 3 of the specs workflow: turn change log entries into GitHub issues. Reads the changes
+  written by specs-changes under docs/changes/<version>/<type>/<change-name>/README.md, analyzes and
+  organizes them into epics, issues, and sub-issues, creates the GitHub issues with the correct
+  issue types / projects / statuses, and updates the change docs with the issue IDs or URLs for
+  traceability. Use after specs-changes has written the change log, or when the user wants change log
+  entries filed on the board.
 allowed-tools: Bash(read, grep, find, ls, mkdir, sed, gh)
 ---
 
 # specs-issue
 
-> Turn a change's tasks into GitHub issues — the bridge between the spec tree and the issue tracker. STEP 3 of the change pipeline.
->
-> **Only for tracked changes with code to implement.** If the change is documentation-only (spec
-> content with no code), do NOT file issues — edit `docs/specs/` directly instead (see specs-propose).
+> Path 3 of the specs workflow: change log → epics/issues/sub-issues → GitHub issues. The change log
+> from specs-changes is the input; the issue tree on the project board is the output.
 
-## Change Pipeline
+## The 3-Path Workflow
 
 ```
-idea → specs-explore → specs-propose → specs-issue → specs-sync → github-issue-tracker
+Path 1: idea/case study → spec updates        (specs-proposal)
+Path 2: spec diff → change log                (specs-changes)
+Path 3: change log → epics/issues/sub-issues  (this skill)
 ```
-
-Propose drafts the change (specs/ future-state + tasks.md). Issue files the task list as GitHub
-issues on the target repo's project board. Sync then merges the spec content into the tree and
-deletes the change dir. Execution of the issues is handled by the global `github-issue-tracker`
-skill (Ready → In Progress → In Review → Done).
 
 ## Prerequisites
 
@@ -39,102 +32,98 @@ skill (Ready → In Progress → In Review → Done).
 
 ## Steps
 
-### 1. Identify the change
+### 1. Read the change log
 
-- The user specifies a change dir, or read `docs/changes/README.md` for the next proposed change.
-- Path: `docs/changes/<version>/<NN>-<kebab>-S<code>/`
+- Read the change entries under `docs/changes/<version>/<type>/<change-name>/README.md` that are not
+  yet tracked (no issue ID stamped).
+- For each entry, extract: Summary, Changes (issue-granularity bullets with sub-bullets), Spec Refs,
+  and the Notes (grouping intent written by specs-changes).
 
-### 2. Read the change artifacts
+### 2. Analyze and organize into epics, issues, and sub-issues
 
-- `proposal.md` — why, what, spec impact, `s-code`, `spec-refs`
-- `tasks.md` — the numbered task list (sections group related work; items are atomic)
-- `specs/` — future-state spec files (context for issue bodies)
+- **Epic** — one per change folder (the coherent spec change). Title from the change name.
+- **Issue** — one per **Changes** bullet in the entry. Title from the bullet.
+- **Sub-issue** — one per indented sub-bullet (parallelizable parts).
+- Use the Notes grouping intent when the change log is ambiguous.
+- Record the mapping in the change doc before creating anything:
+
+```markdown
+## Issue Mapping
+
+- Epic: <title>
+  - Issue: <title> → spec: S130000
+    - Sub-issue: <title>
+```
 
 ### 3. Discover the project board
 
 Per `github-project-manager` conventions:
 
 ```bash
-# Find the project for the repo's issues (org-scoped: --owner flintwillow-software)
 gh project list --owner flintwillow-software --format json | jq -r '.[] | "\(.number) | \(.title)"'
-
-# Get the Status field and option IDs (for setting Ready)
 gh project field-list <project-number> --owner flintwillow-software --format json | jq '
   .[] | select(.name == "Status") | {id: .id, options: [.single_select_options[] | {name, id}]}'
 ```
 
 ### 4. Create the Epic
 
-One Epic per change, typed per org issue types:
+One Epic per change folder, typed per org issue types:
 
 ```bash
 gh issue create --repo flintwillow-software/<repo> \
-  --title "Spec <s-code>: <change name>" \
+  --title "<type>: <change name>" \
   --type Epic \
   --body "$(cat <<'EOF'
 ## Goal
-<from proposal.md Why>
+<from the change entry Summary>
 
 ## Scope
-<from proposal.md What Changes / Out of Scope>
+<the Changes list>
 
-## Acceptance
-<from proposal.md Success Criteria>
-
-Spec refs: <spec-refs>
-Change: docs/changes/<version>/<NN>-<kebab>-S<code>/
+Spec refs: <spec codes>
+Change: docs/changes/<version>/<type>/<change-name>/
 EOF
 )"
 ```
 
-### 5. Create Task issues per task item
+### 5. Create Issue and Sub-issue tasks
 
-For each numbered task item in `tasks.md` (1.1, 1.2, 2.1, …), create a Task-type issue in the
-same repo. Title format per `github-project-manager`: `Implement <component>` / `Document <topic>`.
-Body: description + acceptance criteria from the task item, plus a link to the Epic and the spec codes.
+For each mapped issue, create a Task/Feature-type issue with its sub-issues, linking sub-issues to
+the issue and the issue to the epic (GraphQL sub-issues per `github-project-manager`).
 
-### 6. Link tasks to the Epic
-
-Use GraphQL sub-issues (node_ids, `GraphQL-Features: sub_issues` header) per `github-project-manager`:
-
-```bash
-EPIC_NODE=$(gh api repos/flintwillow-software/<repo>/issues/<epic_num> --jq '.node_id')
-TASK_NODE=$(gh api repos/flintwillow-software/<repo>/issues/<task_num> --jq '.node_id')
-gh api graphql -H "GraphQL-Features: sub_issues" \
-  -f query="mutation { addSubIssue(input: { issueId: \"$EPIC_NODE\", subIssueId: \"$TASK_NODE\" }) { issue { title } } }"
-```
-
-Verify with `subIssues { totalCount }` after each link.
-
-### 7. Add to the project board (Ready)
-
-Org-scoped projects: `gh project item-add` after creation (the `--project` flag on `gh issue create`
-does not work for org projects):
+### 6. Add to the project board (Ready)
 
 ```bash
 gh project item-add <project-number> --owner flintwillow-software \
   --url "https://github.com/flintwillow-software/<repo>/issues/<num>"
+gh project item-edit <project-number> --owner flintwillow-software ... # Status → Ready
 ```
 
-Then set Status → Ready via `gh project item-edit` with the Status field + Ready option IDs.
+### 7. Stamp the change docs
 
-### 8. Update the change tracker
+Update each change entry's `README.md` with the issue IDs/URLs so the system knows it's been created:
 
-- Note the issue numbers in the change's `proposal.md` (or a `docs/changes/README.md` note) so the
-  issue → change traceability chain holds (spec code → change folder → issues → version tag).
-- Leave the change dir in place — `specs-sync` consumes it next.
+```markdown
+## Tracked
+
+- Epic: <url> — #<num>
+  - Issue: <title> — #<num>
+    - Sub-issue: <title> — #<num>
+```
+
+The change doc now carries the traceability chain: spec code → change folder → issues → version.
 
 ## Verification
 
-- [ ] One Epic + N Task issues created, all typed (Epic/Task), titles per naming conventions
-- [ ] Sub-issue links verified (`subIssues.totalCount` on the Epic)
-- [ ] All issues present on the project board in Ready status
-- [ ] Issue bodies reference the spec codes and change path
+- [ ] One Epic + N Issue (+ sub-issue) tasks created, typed (Epic/Task/Feature), titles per conventions
+- [ ] Sub-issue links verified (subIssues.totalCount on the issue, issues on the epic)
+- [ ] All issues on the project board in Ready status
+- [ ] Change docs stamped with issue IDs/URLs
 - [ ] No `fleet` terminology (the workspace uses `team`)
 
 ## Related
 
-- `specs-propose` — previous step: scaffold the change (produces tasks.md)
-- `specs-sync` — next step: merge the change's spec content into the tree
+- `specs-changes` — previous step: writes the change log this skill reads
+- `specs-proposal` — Path 1 (origin of the spec update)
 - `github-issue-tracker` — execute the filed issues (global skill)
 - `github-project-manager` — project board administration (global skill)
