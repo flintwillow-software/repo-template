@@ -2,7 +2,8 @@
 name: specs-render
 description: >
   Assemble the full specification tree as one ordered document for agent context. Walks docs/specs/
-  in numeric order, strips frontmatter, and concatenates the content. Use when an agent needs the
+  in numeric order, strips frontmatter, and concatenates the content. Read-only maintenance step in
+  the change pipeline (explore → propose → issue → sync → execute) — use when an agent needs the
   holistic spec picture.
 allowed-tools: Bash(grep, find, sed, cat, sort)
 ---

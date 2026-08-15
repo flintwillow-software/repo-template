@@ -2,14 +2,25 @@
 name: specs-explore
 description: >
   Enter explore mode — a thinking partner for investigating problems, exploring ideas, and clarifying
-  requirements before writing a change proposal. Use when the user wants to think through something.
-  Read-only stance — never writes code or spec files.
+  requirements before writing a change proposal. STEP 1 of the change pipeline (explore → propose →
+  issue → sync → execute): think first, then specs-propose drafts the change, specs-issue files its
+  tasks as GitHub issues, specs-sync merges the spec into the tree, and github-issue-tracker executes
+  the issues. Use when the user wants to think through something. Read-only stance — never writes code
+  or spec files.
 allowed-tools: Bash(read, grep, find, ls)
 ---
 
 # specs-explore
 
-> Think through an idea before committing to a change proposal. Read-only.
+> Think through an idea before committing to a change proposal. Read-only. Step 1 of 5 in the change pipeline.
+
+## Change Pipeline
+
+```
+idea → specs-explore → specs-propose → specs-issue → specs-sync → github-issue-tracker
+```
+
+Explore is the thinking step. It produces no artifacts — the pipeline starts producing when the user is ready to `specs-propose`.
 
 ## Stance
 
@@ -29,4 +40,6 @@ allowed-tools: Bash(read, grep, find, ls)
 ## Related
 
 - `specs-propose` — scaffold a change after exploring
+- `specs-issue` — file the change's tasks as GitHub issues
+- `github-issue-tracker` — execute the filed issues (global skill)
 - `docs/specs/README.md` — conventions for spec codes and numbering

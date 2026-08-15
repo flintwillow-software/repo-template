@@ -2,13 +2,23 @@
 name: specs-status
 description: >
   Show the current state of the spec tree and change pipeline: active changes, completed versions,
-  and component health. Use when the user wants to know what's in flight or what shipped.
+  and component health. Report step in the change pipeline (explore → propose → issue → sync → execute)
+  — the spec-side status; issue-side status lives on the GitHub project board (see github-project-manager /
+  github-issue-tracker, global skills). Use when the user wants to know what's in flight or what shipped.
 allowed-tools: Bash(grep, find, ls, sort, sed)
 ---
 
 # specs-status
 
 > Report the current state of the spec tree and change pipeline.
+
+## Change Pipeline
+
+```
+idea → specs-explore → specs-propose → specs-issue → specs-sync → github-issue-tracker
+```
+
+Status observes the spec side of the pipeline (active changes, synced versions). For the execution side (issues on the board), use the GitHub project board via `github-project-manager` / `github-issue-tracker`.
 
 ## Steps
 
@@ -46,4 +56,6 @@ For each component in `docs/specs/`, count features and their statuses.
 ## Related
 
 - `specs-index` — generates the permanent spec tree index
+- `specs-issue` — file change tasks as GitHub issues
+- `github-project-manager` / `github-issue-tracker` — execution status on the project board
 - `docs/changes/README.md` — the live change tracker

@@ -2,14 +2,41 @@
 name: specs-propose
 description: >
   Scaffold a new versioned change proposal. Creates the change directory under
-  docs/changes/<version>/<NN>-<kebab>-S<code>/ with proposal.md, design.md, tasks.md, and specs/
-  future-state copies of the affected spec files. Use when the user has a clear idea of what to build.
+  docs/changes/<version>/<NN>-<kebab>-S<code>/ with proposal.md, design.md, tasks.md (the change's
+  implementation task list), and specs/ future-state copies of the affected spec files. STEP 2 of the
+  change pipeline (explore → propose → issue → sync → execute): after proposing, specs-issue files
+  tasks.md as GitHub issues, specs-sync merges the spec content into the tree, and github-issue-tracker
+  executes the issues. The proposal is an intermediate artifact — the spec content and task list are
+  the deliverables. Use when the user wants to make a spec change.
 allowed-tools: Bash(read, grep, find, ls, mkdir, cp, mv)
 ---
 
 # specs-propose
 
 > Scaffold a new change proposal. The atomic unit of traceability from idea to versioned release.
+
+## When to use this skill — vs. direct spec edits
+
+**Direct spec update (docs work):** when the user says "update the specs", "fix the spec", or wants
+spec content changed with no code to implement, edit `docs/specs/` in place — feature files, component
+READMEs, and the tree root `docs/specs/README.md`. Update Status History on each touched file. Record
+the change in `docs/changes/README.md` (Active Changes or a version note). **No change dir, no
+proposal/design/tasks, no issue filing.** The spec tree is the deliverable.
+
+**Change pipeline (tracked implementation):** when the change produces CODE that will be filed as
+GitHub issues and executed via the tracker (specs-issue → github-issue-tracker), scaffold the change
+dir with this skill, then sync into the tree with specs-sync.
+
+> Rule of thumb: if the change is spec-only (documentation), edit the tree directly. If the change
+> has implementation tasks that need issue tracking, use the propose → issue → sync → execute pipeline.
+
+## Change Pipeline
+
+```
+idea → specs-explore → specs-propose → specs-issue → specs-sync → github-issue-tracker
+```
+
+Propose produces the change dir: `specs/` (future-state spec content, the spec update) and `tasks.md` (the change list). It does NOT implement anything — implementation is filed as issues (`specs-issue`) and executed through the tracker. Continue the pipeline after this step; do not stop here.
 
 ## Spec Code Convention
 
@@ -67,6 +94,9 @@ Add an entry to the Active Changes table.
 ## Related
 
 - `specs-explore` — think through the idea first
-- `specs-apply` — implement the change after proposal review
+- `specs-issue` — NEXT STEP: file tasks.md as GitHub issues
+- `specs-sync` — merge the change's spec content into the tree
+- `specs-apply` — direct execution of tasks.md (alternative to the issue path)
+- `github-issue-tracker` — execute the filed issues (global skill)
 - `docs/specs/README.md` — full conventions
 - `docs/templates/change/` — template files

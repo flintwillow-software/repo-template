@@ -2,8 +2,10 @@
 name: specs-index
 description: >
   Regenerate the docs/specs/README.md index. Walks the spec tree, reads frontmatter spec-refs,
-  and builds the component table, requirement inventory, and change map. Use after any sync or
-  renumber operation.
+  and builds the component table, requirement inventory, and change map. Maintenance step in the
+  change pipeline (explore → propose → issue → sync → execute) — index regenerates the tree index
+  after specs-sync or specs-renumber. Implementation is tracked as GitHub issues (specs-issue +
+  github-issue-tracker), not via the index.
 allowed-tools: Bash(grep, find, sed, awk, sort)
 ---
 

@@ -2,8 +2,9 @@
 name: specs-renumber
 description: >
   Consolidation pass: renumber components, features, and subfeatures to close gaps or insert sections.
-  Rewrites all frontmatter spec-refs, inline links, and file paths atomically in one commit. Use when
-  the spec tree accumulates gaps from consolidation or a new section needs to slot between existing ones.
+  Rewrites all frontmatter spec-refs, inline links, and file paths atomically in one commit. Maintenance
+  step in the change pipeline (explore → propose → issue → sync → execute) — exceptional, not routine.
+  Implementation is tracked as GitHub issues (specs-issue + github-issue-tracker), not via renumbering.
 allowed-tools: Bash(grep, find, sed, git, mv)
 ---
 
