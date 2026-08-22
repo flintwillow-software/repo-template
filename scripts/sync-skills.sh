@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync-skills.sh — Sync the specs-* skills (and optionally the spec framework skeletons) from a
+# sync-skills.sh — Sync the d3-* skills (and optionally the spec framework skeletons) from a
 # repo template into target repos.
 #
 # Usage:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# specs-validate.sh — Validate spec tree and change tree structure for CI
-# Usage: specs-validate.sh [--root <repo-root>]  (or positional: specs-validate.sh <repo-root>)
+# d3-validate.sh — Validate spec tree and change tree structure for CI (d3 workflow)
+# Usage: d3-validate.sh [--root <repo-root>]  (or positional: d3-validate.sh <repo-root>)
 # Exit code: 0 = valid, 1 = validation errors
 
 set -euo pipefail

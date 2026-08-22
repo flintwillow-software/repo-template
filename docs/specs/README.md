@@ -9,7 +9,7 @@ tags:
 
 # Specification Root
 
-> Ordered specification tree. This index is maintained by the `specs-index` skill — see [templates/spec-tree](../../docs/templates/spec-tree/README.md) for the skeleton.
+> Ordered specification tree. This index is maintained by the `d3-index` skill — see [templates/spec-tree](../../docs/templates/spec-tree/README.md) for the skeleton.
 
 ## Status
 
@@ -49,7 +49,7 @@ docs/specs/00-core-component/00-foo-feature.md
 ### Amendment Model
 
 - **Default: append** — new subfeatures go at the end of a feature file (`000002`, `000003`…), new features at the end of the component, new components at the end of the tree.
-- **Insertion**: when adjacency matters, the `specs-renumber` skill rewrites numbers + frontmatter codes + inline links + paths atomically in one commit.
+- **Insertion**: when adjacency matters, the `d3-renumber` skill rewrites numbers + frontmatter codes + inline links + paths atomically in one commit.
 - Numbers are **positional sort prefixes**; the kebab-name carries identity.
 
 ### Change Traceability

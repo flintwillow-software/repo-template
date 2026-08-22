@@ -10,7 +10,7 @@ priority: medium
 
 # Specification Root
 
-> Auto-generated index of the ordered spec tree. Maintained by the `specs-index` skill — do not edit by hand.
+> Auto-generated index of the ordered spec tree. Maintained by the `d3-index` skill — do not edit by hand.
 
 ## Structure
 
